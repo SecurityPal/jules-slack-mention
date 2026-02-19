@@ -37,6 +37,39 @@ export default {
         text: "Your Jules API token has been saved securely. You can now @mention me with a task!",
       };
     });
+    app.command("/jules-repo", async ({ payload }) => {
+      const repo = payload.text.trim();
+      const userId = payload.user_id;
+
+      if (!repo) {
+        const storedRepo = await env.USER_TOKENS.get(`repo:${userId}`);
+        if (storedRepo) {
+          return {
+            response_type: "ephemeral",
+            text: `Your Jules repository is set to \`${storedRepo}\`. Use \`/jules-repo <org/repo-name>\` to update it or \`/jules-repo clear\` to reset.`,
+          };
+        }
+        return {
+          response_type: "ephemeral",
+          text: "Usage: `/jules-repo <org/repo-name>`\nExample: `/jules-repo google/jules`",
+        };
+      }
+
+      if (repo.toLowerCase() === "clear") {
+        await env.USER_TOKENS.delete(`repo:${userId}`);
+        return {
+          response_type: "ephemeral",
+          text: "Your Jules repository setting has been cleared. I will now use the first available repository.",
+        };
+      }
+
+      await env.USER_TOKENS.put(`repo:${userId}`, repo);
+      return {
+        response_type: "ephemeral",
+        text: `Your Jules repository has been set to \`${repo}\`.`,
+      };
+    });
+
 
     app.event("app_mention", async ({ payload, context }) => {
       const userId = payload.user;
@@ -84,7 +117,9 @@ export default {
           return;
         }
 
-        const session = await createJulesSession(userToken, taskPrompt, sources[0].name);
+        const storedRepo = await env.USER_TOKENS.get(`repo:${userId}`);
+        const source = selectSource(sources, storedRepo);
+        const session = await createJulesSession(userToken, taskPrompt, source.name);
 
         await context.client.chat.postMessage({
           channel,
@@ -142,7 +177,9 @@ export default {
           return;
         }
 
-        const session = await createJulesSession(userToken, text, sources[0].name);
+        const storedRepo = await env.USER_TOKENS.get(`repo:${userId}`);
+        const source = selectSource(sources, storedRepo);
+        const session = await createJulesSession(userToken, text, source.name);
 
         await context.client.chat.postMessage({
           channel,
@@ -189,6 +226,20 @@ async function listJulesSources(apiKey: string): Promise<JulesSource[]> {
 
   const data = await response.json() as { sources?: JulesSource[] };
   return data.sources || [];
+}
+
+
+function selectSource(sources: JulesSource[], storedRepo: string | null): JulesSource {
+  if (storedRepo) {
+    const match = sources.find(s =>
+      s.id === storedRepo ||
+      s.id === `github.com/${storedRepo}` ||
+      s.name === storedRepo ||
+      s.name.endsWith(`/${storedRepo}`)
+    );
+    if (match) return match;
+  }
+  return sources[0];
 }
 
 async function createJulesSession(
