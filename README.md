@@ -2,7 +2,7 @@
 
 A Cloudflare Worker that lets Slack users create [Jules](https://jules.google.com) tasks by @mentioning the bot.
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/YOUR_USERNAME/jules-slack-mention)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/jdoconnor/jules-slack-mention)
 
 ## Features
 
@@ -59,7 +59,7 @@ Click the deploy button above or:
 
 ```bash
 # Clone and install
-git clone https://github.com/YOUR_USERNAME/jules-slack-mention
+git clone https://github.com/jdoconnor/jules-slack-mention
 cd jules-slack-mention
 npm install
 
