@@ -155,3 +155,6 @@ Update your Slack app's Request URL with the tunnel URL for testing.
 | `SLACK_SIGNING_SECRET` | Slack app signing secret |
 | `SLACK_BOT_TOKEN` | Slack bot OAuth token |
 | `SLACK_BOT_USER_ID` | Bot's user ID (for mention parsing) |
+
+## Known "good enough, but not great" bits
+- the jules api tokens are unencrypted in the KV store. 
