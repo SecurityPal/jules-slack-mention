@@ -2,6 +2,8 @@
 
 A Cloudflare Worker that lets Slack users create [Jules](https://jules.google.com) tasks by @mentioning the bot.
 
+Originally made by [@jdoconnor](https://github.com/jdoconnor/)
+
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/jdoconnor/jules-slack-mention)
 
 ## Features
